@@ -22,8 +22,10 @@ public class RequestPreprocessor extends AbstractMessageTransformer {
 	private static final Pattern P_HOTEL = Pattern.compile("/hotel/q\\?.*");
 	private static final Pattern P_RESTAURANT = Pattern.compile("/restaurant/q\\?.*");
 	private static final Pattern P_TAXI = Pattern.compile("/taxi/q\\?.*");
+	private static final Pattern P_IP = Pattern.compile("/ip/q\\?.*");
 	
 	private static final List<RequestSpec> REQUEST_SPECS = new ArrayList<RequestSpec>();
+	private static final List<RequestSpec> IP_SPECS = new ArrayList<RequestSpec>();
 	static{
 		REQUEST_SPECS.add(new RequestSpec(
 				"weather.51wnl.com/weatherinfo/GetMoreWeather", 
@@ -39,6 +41,12 @@ public class RequestPreprocessor extends AbstractMessageTransformer {
 				"webservice.webxml.com.cn/WebServices/WeatherWebService.asmx/getWeatherbyCityName", 
 				new cn.edu.zju.ccnt.weather.weatherws.RestRequestPramsGeneratorImpl(), 
 				new cn.edu.zju.ccnt.weather.weatherws.StandardizerImpl()));
+	}
+	static{
+		IP_SPECS.add(new RequestSpec(
+				"http://www.telize.com/geoip/",     //url直接加上ip地址查询
+				new cn.edu.zju.ccnt.weather._51wnl.RestRequestPramsGeneratorImpl(), 
+				new cn.edu.zju.ccnt.weather._51wnl.StandardizerImpl()));
 	}
 
 	@Override

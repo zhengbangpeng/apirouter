@@ -51,11 +51,16 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 
 	<flow name="REST_JSON_InvokeFlow" doc:name="REST_JSON_InvokeFlow">
         <set-variable variableName="requestSpec" value="#[flowVars.requestSpecs.poll()]" doc:name="Variable"/>
+        <set-variable variableName="requestParam" value="" doc:name="Variable"/>
+        <choice doc:name="Choice">
+            <when expression="">
+                <http:outbound-endpoint exchange-pattern="request-response" host="localhost" port="8081" method="POST" doc:name="HTTP"/>
+            </when>
+            <otherwise>
+                <http:outbound-endpoint exchange-pattern="request-response" method="GET" address="http://#[flowVars.requestSpec.getUrl()]?#[flowVars.requestSpec.getParamsGenerator().generateParamString(flowVars.requstParams)]" doc:name="HTTP"/>
+            </otherwise>
+        </choice>
 
-		<http:outbound-endpoint exchange-pattern="request-response"
-			method="GET"
-			address="http://#[flowVars.requestSpec.getUrl()]?#[flowVars.requestSpec.getParamsGenerator().generateParamString(flowVars.requstParams)]"
-			doc:name="HTTP" />
 		<byte-array-to-string-transformer
 			doc:name="Byte Array to String" />
 		<logger message="resp #[payload]" level="INFO" doc:name="Logger" />
@@ -86,7 +91,7 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 				</mongo:find-one-object>
 				<mongo:dbobject-to-json doc:name="Mongo DB" />
 				<json:json-to-object-transformer
-					returnClass="cn.edu.zju.ccnt.weather.WeatherResult" doc:name="JSON to Object" />
+					returnClass="cn.edu.zju.ccnt.ApiResult" doc:name="JSON to Object" />
 			</processor-chain>
 			<flow-ref name="REST_JSON_InvokeFlow" doc:name="Flow Reference"/>
 			<!--processor-chain>
