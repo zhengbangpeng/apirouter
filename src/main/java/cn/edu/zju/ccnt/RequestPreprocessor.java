@@ -35,10 +35,23 @@ public class RequestPreprocessor extends AbstractMessageTransformer {
 	private static final String RESTAURANT_PATH = "/restaurant";
 	private static final String TAXI_PATH = "/taxi";
 	
+	/**
+	 * 请求参数  ip=...
+	 */
+	private static final String IP_PATH = "/ip";
+	
+	/**
+	 * 请求参数 tel=...
+	 */
+	private static final String PHONE_PATH = "/phone";
+	
 	
 	
 	private static final List<RequestSpec> WEATHER_REQUEST_SPECS = new ArrayList<RequestSpec>();
 	private static final List<RequestSpec> TRAIN_S2S_REQUEST_SPECS = new ArrayList<RequestSpec>();
+	
+	private static final List<RequestSpec> IP_REQUEST_SPECS = new ArrayList<RequestSpec>();
+	private static final List<RequestSpec> PHONE_REQUEST_SPECS = new ArrayList<RequestSpec>();
 	static{
 		WEATHER_REQUEST_SPECS.add(new RequestSpec(
 				"weather.51wnl.com/weatherinfo/GetMoreWeather", 
@@ -59,6 +72,26 @@ public class RequestPreprocessor extends AbstractMessageTransformer {
 				"m.tieyou.com/jy/index.php", 
 				new cn.edu.zju.ccnt.train.s2s.tieyou.RestRequestPramsGeneratorImpl(), 
 				new cn.edu.zju.ccnt.train.s2s.tieyou.StandardizerImpl(), HttpMethodType.GET));
+	}
+	
+	static{
+		IP_REQUEST_SPECS.add(new RequestSpec(
+				"apistore.baidu.com/microservice/iplookup",     
+				new cn.edu.zju.ccnt.ip.baidu.RestRequestPramsGeneratorImpl(), 
+				new cn.edu.zju.ccnt.ip.baidu.StandardizerImpl(),HttpMethodType.GET));
+		IP_REQUEST_SPECS.add(new RequestSpec(
+				"www.telize.com/geoip",     //url直接加上/ip地址查询
+				new cn.edu.zju.ccnt.ip.telize.RestRequestPramsGeneratorImpl(), 
+				new cn.edu.zju.ccnt.ip.telize.StandardizerImpl(),HttpMethodType.GET));
+		
+		PHONE_REQUEST_SPECS.add(new RequestSpec(
+				"virtual.paipai.com/extinfo/GetMobileProductInfo",     
+				new cn.edu.zju.ccnt.phone.paipai.RestRequestPramsGeneratorImpl(), 
+				new cn.edu.zju.ccnt.phone.paipai.StandardizerImpl(),HttpMethodType.GET));
+		PHONE_REQUEST_SPECS.add(new RequestSpec(
+				"apistore.baidu.com/microservice/mobilephone",     
+				new cn.edu.zju.ccnt.phone.baidu.RestRequestPramsGeneratorImpl(), 
+				new cn.edu.zju.ccnt.phone.baidu.StandardizerImpl(),HttpMethodType.GET));
 	}
 
 	@Override
@@ -81,6 +114,15 @@ public class RequestPreprocessor extends AbstractMessageTransformer {
 			message.setInvocationProperty("requestSpecs", new LinkedList(TRAIN_S2S_REQUEST_SPECS));
 			
 			message.setInvocationProperty("needsCache", false);
+			break;
+			
+		case IP_PATH:
+			message.setInvocationProperty("requestSpecs", new LinkedList(IP_REQUEST_SPECS));
+			message.setInvocationProperty("needsCache", false);  
+			break;
+		case PHONE_PATH:
+			message.setInvocationProperty("requestSpecs", new LinkedList(PHONE_REQUEST_SPECS));
+			message.setInvocationProperty("needsCache", false);  
 			break;
 
 		default:
